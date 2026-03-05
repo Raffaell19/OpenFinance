@@ -9,6 +9,7 @@ interface AppState {
   budgets: Budget[];
   recurring: Recurring[];
   isLoading: boolean;
+  userName: string | null;
 
   fetchData: () => Promise<void>;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
@@ -51,6 +52,7 @@ export const useStore = create<AppState>()((set, get) => ({
   budgets: [],
   recurring: [],
   isLoading: false,
+  userName: null,
 
   fetchData: async () => {
     set({ isLoading: true });
@@ -58,9 +60,11 @@ export const useStore = create<AppState>()((set, get) => ({
     // Fetch from Supabase
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      set({ isLoading: false });
+      set({ isLoading: false, userName: null });
       return;
     }
+
+    const userName = user.user_metadata?.name || null;
 
     let { data: categories } = await supabase.from('categories').select('*');
 
@@ -101,7 +105,8 @@ export const useStore = create<AppState>()((set, get) => ({
         limit: Number(b.limit_amount),
         spent: Number(b.spent_amount)
       })) || [],
-      isLoading: false
+      isLoading: false,
+      userName
     });
   },
 

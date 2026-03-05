@@ -25,14 +25,14 @@ const getCategoryColor = (colorClass: string) => {
 };
 
 export function Dashboard() {
-  const { transactions, accounts, budgets, categories } = useStore();
+  const { transactions, accounts, budgets, categories, userName } = useStore();
 
   const totalBalance = accounts.reduce((acc, curr) => acc + curr.balance, 0);
-  
+
   // Calculate income/expense for current month
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
-  
+
   const monthlyTransactions = transactions.filter(t => {
     const d = new Date(t.date);
     return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
@@ -58,10 +58,10 @@ export function Dashboard() {
       const amount = expenseTransactions
         .filter(t => t.categoryId === cat.id)
         .reduce((acc, curr) => acc + curr.amount, 0);
-      
-      return { 
-        name: cat.name, 
-        value: amount, 
+
+      return {
+        name: cat.name,
+        value: amount,
         color: cat.color,
         hexColor: getCategoryColor(cat.color),
         icon: cat.icon,
@@ -77,7 +77,7 @@ export function Dashboard() {
     const spent = monthlyTransactions
       .filter(t => t.categoryId === b.categoryId && t.type === 'expense')
       .reduce((acc, curr) => acc + curr.amount, 0);
-    
+
     return {
       ...b,
       categoryName: category?.name || 'Unknown',
@@ -93,7 +93,7 @@ export function Dashboard() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-emerald-700 dark:text-emerald-500">OpenFinance</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Olá, Usuário 👋</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Olá, {userName || 'Usuário'} 👋</p>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full bg-white dark:bg-slate-900 shadow-sm hover:bg-slate-100 dark:hover:bg-slate-800">
           <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
@@ -107,7 +107,7 @@ export function Dashboard() {
             <p className="text-emerald-100 text-sm font-medium">Saldo Total</p>
             <h2 className="text-3xl font-bold tracking-tight">{formatCurrency(totalBalance)}</h2>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
             <div>
               <div className="flex items-center gap-1 text-emerald-100 text-xs mb-1">
@@ -171,7 +171,7 @@ export function Dashboard() {
                         <Cell key={`cell-${index}`} fill={entry.hexColor} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value: number) => formatCurrency(value)}
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                       itemStyle={{ color: '#1e293b' }}
@@ -191,7 +191,7 @@ export function Dashboard() {
                   <div key={category.name} className="flex items-center justify-between group">
                     <div className="flex items-center gap-3">
                       <div className={`p-2.5 rounded-full ${category.color} transition-transform group-hover:scale-110`}>
-                         <CategoryIcon iconName={category.icon} className="h-5 w-5" />
+                        <CategoryIcon iconName={category.icon} className="h-5 w-5" />
                       </div>
                       <span className="font-medium text-slate-700 dark:text-slate-300">{category.name}</span>
                     </div>
