@@ -23,16 +23,22 @@ const getCategoryColor = (colorClass: string) => {
 
 export function Reports() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [timeRange, setTimeRange] = useState('6M');
   const { transactions, categories } = useStore();
 
   const onPieEnter = (_: any, index: number) => {
     setActiveIndex(index);
   };
 
-  // Cash Flow Calculations (Last 6 Months)
-  const last6Months = Array.from({ length: 6 }).map((_, i) => {
+  // Cash Flow Calculations
+  let periodLength = 6;
+  if (timeRange === '1M') periodLength = 1;
+  else if (timeRange === '3M') periodLength = 3;
+  else if (timeRange === '1Y') periodLength = new Date().getMonth() + 1;
+
+  const chartPeriods = Array.from({ length: periodLength }).map((_, i) => {
     const d = new Date();
-    d.setMonth(d.getMonth() - (5 - i));
+    d.setMonth(d.getMonth() - (periodLength - 1 - i));
     return {
       month: d.getMonth(),
       year: d.getFullYear(),
@@ -40,7 +46,7 @@ export function Reports() {
     };
   });
 
-  const cashFlowData = last6Months.map(m => {
+  const cashFlowData = chartPeriods.map(m => {
     const monthTxs = transactions.filter(t => {
       const d = new Date(t.date);
       return d.getMonth() === m.month && d.getFullYear() === m.year;
@@ -106,9 +112,15 @@ export function Reports() {
             <ArrowUpRight className="h-4 w-4 text-emerald-500" />
             Fluxo de Caixa
           </h2>
-          <select className="bg-slate-50 dark:bg-slate-800 border-none text-xs rounded-lg px-2 py-1 text-slate-600 dark:text-slate-300 focus:ring-0 cursor-pointer">
-            <option>Últimos 6 meses</option>
-            <option>Este ano</option>
+          <select
+            className="bg-slate-50 dark:bg-slate-800 border-none text-xs rounded-lg px-2 py-1 text-slate-600 dark:text-slate-300 focus:ring-0 cursor-pointer"
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+          >
+            <option value="1M">Último mês</option>
+            <option value="3M">Últimos 3 meses</option>
+            <option value="6M">Últimos 6 meses</option>
+            <option value="1Y">Este ano</option>
           </select>
         </div>
 
