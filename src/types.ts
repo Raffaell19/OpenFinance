@@ -24,6 +24,7 @@ export interface Transaction {
   date: string; // ISO string
   description: string;
   tags?: string[];
+  receipt_url?: string;
 }
 
 export interface Budget {

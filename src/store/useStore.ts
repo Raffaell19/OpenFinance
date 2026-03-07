@@ -19,6 +19,8 @@ interface AppState {
   deleteBudget: (id: string) => Promise<void>;
   getCategory: (id: string) => Category | undefined;
   getAccount: (id: string) => Account | undefined;
+  uploadReceipt: (transactionId: string, file: File) => Promise<void>;
+  deleteReceipt: (transactionId: string) => Promise<void>;
 }
 
 const SEED_CATEGORIES = [
@@ -118,7 +120,8 @@ export const useStore = create<AppState>()((set, get) => ({
       transactions: transactions?.map(t => ({
         ...t,
         categoryId: t.category_id,
-        accountId: t.account_id
+        accountId: t.account_id,
+        receipt_url: t.receipt_url
       })) || [],
       budgets: budgets?.map(b => ({
         ...b,
@@ -243,4 +246,55 @@ export const useStore = create<AppState>()((set, get) => ({
 
   getCategory: (id) => get().categories.find(c => c.id === id),
   getAccount: (id) => get().accounts.find(a => a.id === id),
+
+  uploadReceipt: async (transactionId, file) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${transactionId}-${Math.random()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('receipts')
+      .upload(fileName, file, { upsert: true });
+
+    if (uploadError) {
+      console.error('Error uploading receipt:', uploadError);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('receipts')
+      .getPublicUrl(fileName);
+
+    const { error: updateError } = await supabase.from('transactions')
+      .update({ receipt_url: publicUrl })
+      .eq('id', transactionId);
+
+    if (updateError) {
+      console.error('Error updating transaction with receipt:', updateError);
+      return;
+    }
+
+    await get().fetchData();
+  },
+
+  deleteReceipt: async (transactionId) => {
+    const transaction = get().transactions.find(t => t.id === transactionId);
+    if (!transaction || !transaction.receipt_url) return;
+
+    // Extract filename from URL (basic implementation)
+    const urlParts = transaction.receipt_url.split('/');
+    const fileName = urlParts.slice(urlParts.length - 2).join('/'); // typically user_id/filename
+
+    // Delete from storage
+    await supabase.storage.from('receipts').remove([fileName]);
+
+    // Update DB
+    await supabase.from('transactions')
+      .update({ receipt_url: null })
+      .eq('id', transactionId);
+
+    await get().fetchData();
+  }
 }));
