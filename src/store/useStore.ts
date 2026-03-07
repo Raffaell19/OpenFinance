@@ -37,6 +37,8 @@ const SEED_CATEGORIES = [
   { name: 'Gasolina', icon: 'Fuel', color: 'bg-stone-100 text-stone-600', type: 'expense' },
   { name: 'Salário', icon: 'Banknote', color: 'bg-emerald-100 text-emerald-600', type: 'income' },
   { name: 'Investimentos', icon: 'TrendingUp', color: 'bg-teal-100 text-teal-600', type: 'income' },
+  { name: 'Dízimo', icon: 'Heart', color: 'bg-rose-100 text-rose-600', type: 'expense' },
+  { name: 'Oferta Alçada', icon: 'Gift', color: 'bg-purple-100 text-purple-600', type: 'expense' },
 ];
 
 const SEED_ACCOUNTS = [
@@ -79,6 +81,25 @@ export const useStore = create<AppState>()((set, get) => ({
         .select('*');
 
       categories = newCategories || [];
+    } else {
+      // Check for missing new default categories for existing users
+      const missingCategories = [];
+
+      const hasDizimo = categories.some(c => c.name === 'Dízimo');
+      if (!hasDizimo) missingCategories.push({ name: 'Dízimo', icon: 'Heart', color: 'bg-rose-100 text-rose-600', type: 'expense' });
+
+      const hasOferta = categories.some(c => c.name === 'Oferta Alçada');
+      if (!hasOferta) missingCategories.push({ name: 'Oferta Alçada', icon: 'Gift', color: 'bg-purple-100 text-purple-600', type: 'expense' });
+
+      if (missingCategories.length > 0) {
+        const { data: addedCategories } = await supabase.from('categories')
+          .insert(missingCategories.map(c => ({ ...c, user_id: user.id })))
+          .select('*');
+
+        if (addedCategories) {
+          categories = [...categories, ...addedCategories];
+        }
+      }
     }
 
     const [
