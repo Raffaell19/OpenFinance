@@ -92,7 +92,7 @@ export function Dashboard() {
       {/* Header */}
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-emerald-700 dark:text-emerald-500">OpenFinance</h1>
+          <img src="/logo.png" alt="OpenFinance" className="h-10 w-auto object-contain mb-1" />
           <p className="text-sm text-slate-500 dark:text-slate-400">Olá, {userName || 'Usuário'} 👋</p>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full bg-white dark:bg-slate-900 shadow-sm hover:bg-slate-100 dark:hover:bg-slate-800">
