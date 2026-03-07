@@ -88,11 +88,11 @@ export function Dashboard() {
   }).sort((a, b) => b.percentage - a.percentage).slice(0, 3);
 
   return (
-    <div className="space-y-5 p-4 pt-2">
+    <div className="space-y-4 p-4 pt-4">
       {/* Header */}
-      <header className="flex items-start justify-between -mb-2">
+      <header className="flex items-start justify-between">
         <div className="flex flex-col items-center">
-          <img src="/logo.png" alt="OpenFinance" className="h-[80px] md:h-[100px] w-auto object-contain -mt-2 mb-0" />
+          <img src="/logo.png" alt="OpenFinance" className="h-[100px] md:h-[120px] w-auto object-contain mb-1" />
           <p className="text-sm text-slate-500 dark:text-slate-400">Olá, {userName || 'Usuário'} 👋</p>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full bg-white dark:bg-slate-900 shadow-sm hover:bg-slate-100 dark:hover:bg-slate-800">
