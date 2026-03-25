@@ -41,6 +41,9 @@ const SEED_CATEGORIES = [
   { name: 'Investimentos', icon: 'TrendingUp', color: 'bg-teal-100 text-teal-600', type: 'income' },
   { name: 'Dízimo', icon: 'Heart', color: 'bg-rose-100 text-rose-600', type: 'expense' },
   { name: 'Oferta Alçada', icon: 'Gift', color: 'bg-purple-100 text-purple-600', type: 'expense' },
+  { name: 'Fatura do Cartão', icon: 'CreditCard', color: 'bg-blue-100 text-blue-600', type: 'expense' },
+  { name: 'Pix Enviado', icon: 'ArrowUpRight', color: 'bg-red-100 text-red-600', type: 'expense' },
+  { name: 'Pix Recebido', icon: 'ArrowDownLeft', color: 'bg-emerald-100 text-emerald-600', type: 'income' },
 ];
 
 const SEED_ACCOUNTS = [
@@ -92,6 +95,15 @@ export const useStore = create<AppState>()((set, get) => ({
 
       const hasOferta = categories.some(c => c.name === 'Oferta Alçada');
       if (!hasOferta) missingCategories.push({ name: 'Oferta Alçada', icon: 'Gift', color: 'bg-purple-100 text-purple-600', type: 'expense' });
+
+      const hasFatura = categories.some(c => c.name === 'Fatura do Cartão');
+      if (!hasFatura) missingCategories.push({ name: 'Fatura do Cartão', icon: 'CreditCard', color: 'bg-blue-100 text-blue-600', type: 'expense' });
+
+      const hasPixEnv = categories.some(c => c.name === 'Pix Enviado');
+      if (!hasPixEnv) missingCategories.push({ name: 'Pix Enviado', icon: 'ArrowUpRight', color: 'bg-red-100 text-red-600', type: 'expense' });
+
+      const hasPixRec = categories.some(c => c.name === 'Pix Recebido');
+      if (!hasPixRec) missingCategories.push({ name: 'Pix Recebido', icon: 'ArrowDownLeft', color: 'bg-emerald-100 text-emerald-600', type: 'income' });
 
       if (missingCategories.length > 0) {
         const { data: addedCategories } = await supabase.from('categories')

@@ -24,7 +24,10 @@ import {
   Store,
   Wrench,
   Fuel,
-  Gamepad2
+  Gamepad2,
+  CreditCard,
+  ArrowUpRight,
+  ArrowDownLeft
 } from 'lucide-react';
 
 interface CategoryIconProps {
@@ -58,6 +61,9 @@ export function CategoryIcon({ iconName, className = "h-4 w-4" }: CategoryIconPr
     'Wrench': Wrench,
     'Fuel': Fuel,
     'Gamepad2': Gamepad2,
+    'CreditCard': CreditCard,
+    'ArrowUpRight': ArrowUpRight,
+    'ArrowDownLeft': ArrowDownLeft,
   };
 
   const IconComponent = icons[iconName] || AlertCircle;
