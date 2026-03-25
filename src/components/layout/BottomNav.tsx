@@ -9,7 +9,7 @@ export function BottomNav() {
     { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
     { name: 'Transações', icon: List, path: '/transactions' },
     { name: 'Lançar', icon: Plus, path: '/add', isFab: true },
-    { name: 'Orçamentos', icon: PieChart, path: '/budgets' },
+    { name: 'Gastos Previstos', icon: PieChart, path: '/budgets' },
     { name: 'Relatórios', icon: BarChart3, path: '/reports' },
     { name: 'Mais', icon: MoreHorizontal, path: '/more' },
   ];

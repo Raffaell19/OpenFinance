@@ -15,7 +15,7 @@ interface AppState {
   addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
   updateTransaction: (id: string, transaction: Omit<Transaction, 'id'>) => Promise<void>;
-  updateBudget: (categoryId: string, limit: number) => Promise<void>;
+  updateBudget: (categoryId: string, limit: number, installmentData?: Partial<Budget>) => Promise<void>;
   deleteBudget: (id: string) => Promise<void>;
   getCategory: (id: string) => Category | undefined;
   getAccount: (id: string) => Account | undefined;
@@ -44,6 +44,7 @@ const SEED_CATEGORIES = [
   { name: 'Fatura do Cartão', icon: 'CreditCard', color: 'bg-blue-100 text-blue-600', type: 'expense' },
   { name: 'Pix Enviado', icon: 'ArrowUpRight', color: 'bg-red-100 text-red-600', type: 'expense' },
   { name: 'Pix Recebido', icon: 'ArrowDownLeft', color: 'bg-emerald-100 text-emerald-600', type: 'income' },
+  { name: 'Gastos Fixos', icon: 'Lock', color: 'bg-indigo-100 text-indigo-600', type: 'expense' },
 ];
 
 const SEED_ACCOUNTS = [
@@ -105,6 +106,9 @@ export const useStore = create<AppState>()((set, get) => ({
       const hasPixRec = categories.some(c => c.name === 'Pix Recebido');
       if (!hasPixRec) missingCategories.push({ name: 'Pix Recebido', icon: 'ArrowDownLeft', color: 'bg-emerald-100 text-emerald-600', type: 'income' });
 
+      const hasFixed = categories.some(c => c.name === 'Gastos Fixos');
+      if (!hasFixed) missingCategories.push({ name: 'Gastos Fixos', icon: 'Lock', color: 'bg-indigo-100 text-indigo-600', type: 'expense' });
+
       if (missingCategories.length > 0) {
         const { data: addedCategories } = await supabase.from('categories')
           .insert(missingCategories.map(c => ({ ...c, user_id: user.id })))
@@ -139,7 +143,13 @@ export const useStore = create<AppState>()((set, get) => ({
         ...b,
         categoryId: b.category_id,
         limit: Number(b.limit_amount),
-        spent: Number(b.spent_amount)
+        spent: Number(b.spent_amount),
+        is_installment: b.is_installment,
+        installments_total: b.installments_total,
+        installment_value: b.installment_value,
+        start_date: b.start_date,
+        end_date: b.end_date,
+        description: b.description
       })) || [],
       isLoading: false,
       userName
@@ -241,7 +251,8 @@ export const useStore = create<AppState>()((set, get) => ({
     const { error } = await supabase.from('budgets').upsert({
       user_id: user.id,
       category_id: categoryId,
-      limit_amount: limit
+      limit_amount: limit,
+      ...installmentData
     }, { onConflict: 'user_id,category_id' });
 
     if (!error) {

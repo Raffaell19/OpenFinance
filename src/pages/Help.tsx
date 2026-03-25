@@ -8,7 +8,7 @@ export function Help() {
   const faqs = [
     { q: 'Como adicionar uma nova conta?', a: 'Vá em Mais > Configurações > Contas ou clique no ícone de carteira na tela inicial.' },
     { q: 'Meus dados ficam na nuvem?', a: 'Não. O OpenFinance funciona offline-first e seus dados ficam salvos apenas no seu dispositivo.' },
-    { q: 'Como criar um orçamento?', a: 'Acesse a aba "Orçamentos" e clique em "Criar novo orçamento" para definir limites por categoria.' },
+    { q: 'Como planejar gastos previstos?', a: 'Acesse a aba "Gastos Previstos" e clique em "+ Configurar gasto previsto" para definir limites ou parcelamentos.' },
     { q: 'Posso exportar meus dados?', a: 'Sim, em breve teremos a função de exportar para CSV e PDF na tela de Transações.' },
   ];
 

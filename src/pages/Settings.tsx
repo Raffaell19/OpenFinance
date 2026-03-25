@@ -57,7 +57,7 @@ export function Settings() {
                 <Bell className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-medium text-slate-900 dark:text-slate-100">Alertas de Orçamento</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">Alertas de Gastos</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Receber avisos de gastos</p>
               </div>
             </div>

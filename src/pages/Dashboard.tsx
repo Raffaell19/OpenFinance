@@ -210,14 +210,16 @@ export function Dashboard() {
       {/* Budgets */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100">Meus Orçamentos</h3>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100">Gastos Previstos</h3>
           <Link to="/budgets" className="text-xs font-medium text-emerald-600 dark:text-emerald-500 hover:underline">Ver todos</Link>
         </div>
         <div className="space-y-3">
           {budgetProgress.map((budget) => (
             <div key={budget.id} className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
               <div className="flex justify-between text-sm mb-2">
-                <span className="font-medium text-slate-700 dark:text-slate-300">{budget.categoryName}</span>
+                <span className="font-medium text-slate-700 dark:text-slate-300">
+                  {budget.categoryName} {budget.is_installment && '(Parcelado)'}
+                </span>
                 <span className="text-slate-500 dark:text-slate-400 text-xs">
                   {formatCurrency(budget.spent)} / {formatCurrency(budget.limit)}
                 </span>

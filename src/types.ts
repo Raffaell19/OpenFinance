@@ -32,6 +32,12 @@ export interface Budget {
   categoryId: string;
   limit: number;
   spent: number; // Calculated field usually, but storing for simplicity in prototype
+  is_installment?: boolean;
+  installments_total?: number;
+  installment_value?: number;
+  start_date?: string;
+  end_date?: string;
+  description?: string;
 }
 
 export interface Recurring {

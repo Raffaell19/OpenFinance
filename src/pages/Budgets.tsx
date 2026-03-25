@@ -27,7 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 export function Budgets() {
-  const { budgets, categories, transactions, updateBudget, deleteBudget } = useStore();
+  const { budgets, categories, transactions, updateBudget, deleteBudget, fetchData } = useStore();
   const [editingBudget, setEditingBudget] = useState<{ id: string, categoryId: string, limit: number } | null>(null);
   const [deletingBudget, setDeletingBudget] = useState<string | null>(null);
   const [newLimit, setNewLimit] = useState('');
@@ -90,8 +90,8 @@ export function Budgets() {
           <PieChart className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Orçamentos</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Planeje seus gastos mensais</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Gastos Previstos</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Controle seus gastos fixos e parcelados</p>
         </div>
       </header>
 
@@ -105,9 +105,15 @@ export function Budgets() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-slate-100">{budget.categoryName}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Restante: <span className="font-medium text-emerald-600 dark:text-emerald-500">{formatCurrency(Math.max(0, budget.limit - budget.spent))}</span>
-                  </p>
+                  {budget.is_installment ? (
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+                      Parcelado: {budget.installments_total}x de {formatCurrency(budget.installment_value || 0)}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Restante: <span className="font-medium text-emerald-600 dark:text-emerald-500">{formatCurrency(Math.max(0, budget.limit - budget.spent))}</span>
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -161,7 +167,7 @@ export function Budgets() {
         <div className="p-6 text-center bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 transition-colors">
           <p className="text-slate-500 dark:text-slate-400 text-sm mb-2">Quer controlar mais categorias?</p>
           <Link to="/add-budget" className="text-emerald-600 dark:text-emerald-500 font-semibold text-sm hover:underline inline-block">
-            + Criar novo orçamento
+            + Configurar gasto previsto
           </Link>
         </div>
       </div>
