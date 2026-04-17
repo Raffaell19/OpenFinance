@@ -71,12 +71,15 @@ export function AddTransaction() {
       return;
     }
 
+    const [year, month, day] = date.split('-').map(Number);
+    const localDate = new Date(year, month - 1, day, 12, 0, 0);
+
     const transactionData = {
       amount: parseFloat(amount),
       type,
       categoryId,
       accountId,
-      date: new Date(date).toISOString(),
+      date: localDate.toISOString(),
       description: description || categories.find(c => c.id === categoryId)?.name || 'Sem descrição',
     };
 

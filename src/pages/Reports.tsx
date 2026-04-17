@@ -31,14 +31,29 @@ export function Reports() {
   };
 
   // Cash Flow Calculations
+  // "Último mês" (1M) = last closed month (previous month), not current
+  const now = new Date();
   let periodLength = 6;
-  if (timeRange === '1M') periodLength = 1;
-  else if (timeRange === '3M') periodLength = 3;
-  else if (timeRange === '1Y') periodLength = new Date().getMonth() + 1;
+  let monthOffset = 0; // how many months back from current to start
+  if (timeRange === '1M') {
+    periodLength = 1;
+    monthOffset = 1; // go back 1 month (last closed month)
+  } else if (timeRange === '3M') {
+    periodLength = 3;
+    monthOffset = 1; // start from last closed month
+  } else if (timeRange === '6M') {
+    periodLength = 6;
+    monthOffset = 1; // start from last closed month
+  } else if (timeRange === '1Y') {
+    // Show from January to last closed month
+    periodLength = now.getMonth(); // Jan=0 means 0 months, but getMonth() in April=3, so Jan-Mar = 3 months
+    if (periodLength === 0) periodLength = 12; // If January, show previous year
+    monthOffset = 1;
+  }
 
   const chartPeriods = Array.from({ length: periodLength }).map((_, i) => {
     const d = new Date();
-    d.setMonth(d.getMonth() - (periodLength - 1 - i));
+    d.setMonth(d.getMonth() - monthOffset - (periodLength - 1 - i));
     return {
       month: d.getMonth(),
       year: d.getFullYear(),
@@ -48,7 +63,8 @@ export function Reports() {
 
   const cashFlowData = chartPeriods.map(m => {
     const monthTxs = transactions.filter(t => {
-      const d = new Date(t.date);
+      const [y, mm, dd] = t.date.split('T')[0].split('-').map(Number);
+      const d = new Date(y, mm - 1, dd);
       return d.getMonth() === m.month && d.getFullYear() === m.year;
     });
     return {
@@ -58,13 +74,16 @@ export function Reports() {
     };
   });
 
-  // Expense by Category Calculations (Current Month)
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
+  // Expense by Category Calculations — respects timeRange filter
+  // For category breakdown, use all months in the selected period
+  const categoryPeriodMonths = new Set(
+    chartPeriods.map(p => `${p.year}-${p.month}`)
+  );
 
   const monthlyTransactions = transactions.filter(t => {
-    const d = new Date(t.date);
-    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    const [y, mm, dd] = t.date.split('T')[0].split('-').map(Number);
+    const d = new Date(y, mm - 1, dd);
+    return categoryPeriodMonths.has(`${d.getFullYear()}-${d.getMonth()}`);
   });
 
   const expenseTransactions = monthlyTransactions.filter(t => t.type === 'expense');
@@ -118,6 +137,7 @@ export function Reports() {
             onChange={(e) => setTimeRange(e.target.value)}
           >
             <option value="1M">Último mês</option>
+            {/* Nota: "Último mês" exibe o mês anterior fechado */}
             <option value="3M">Últimos 3 meses</option>
             <option value="6M">Últimos 6 meses</option>
             <option value="1Y">Este ano</option>

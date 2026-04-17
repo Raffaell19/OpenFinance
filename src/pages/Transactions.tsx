@@ -63,12 +63,15 @@ export function Transactions() {
     const matchesType = filterType === 'all' || t.type === filterType;
     const matchesCategory = filterCategory === 'all' || t.categoryId === filterCategory;
 
-    const txDate = new Date(t.date);
-    const startDate = filterDateStart ? new Date(filterDateStart) : null;
-    const endDate = filterDateEnd ? new Date(filterDateEnd) : null;
+    // Robus date parsing for filtering
+    const parseDateSafe = (dateStr: string) => {
+      const [y, m, d] = dateStr.split('T')[0].split('-').map(Number);
+      return new Date(y, m - 1, d).getTime();
+    };
 
-    // Adjust end date to include the full day
-    if (endDate) endDate.setHours(23, 59, 59, 999);
+    const txDate = parseDateSafe(t.date);
+    const startDate = filterDateStart ? parseDateSafe(filterDateStart) : null;
+    const endDate = filterDateEnd ? parseDateSafe(filterDateEnd) : null;
 
     const matchesDate = (!startDate || txDate >= startDate) && (!endDate || txDate <= endDate);
 
